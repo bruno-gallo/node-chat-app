@@ -14,14 +14,22 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+    // Emite un mensaje a una conexión
     socket.emit('newMessage', {
-        from: "Bruno",
-        text: "Nuttin but a G thang",
+        from: "Host",
+        text: "Welcome",
         createdAt: 666
     });
 
+    // Cada vez que recibe un mensaje de un usuario, lo reenvía a todos los usuarios
     socket.on('createMessage', (message) => {
         console.log("Create Message:", message);
+        // Emite un mensaje a todas las conexiones (broadcast)
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        })
     });
 
     socket.on('disconnect', () => {

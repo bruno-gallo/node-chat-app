@@ -14,22 +14,28 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    // Emite un mensaje a una conexión
+    // Emite un mensaje al usuario que abre una conexión
     socket.emit('newMessage', {
-        from: "Host",
-        text: "Welcome",
-        createdAt: 666
+        from: "Admin",
+        text: "Welcome to the Chat App"
+    });
+
+    // Enmite un mensaje al resto de los usuarios
+    socket.broadcast.emit('newMessage', {
+        from: "Admin",
+        text: "New User has joined",
+        createdAt: new Date().getTime()
     });
 
     // Cada vez que recibe un mensaje de un usuario, lo reenvía a todos los usuarios
     socket.on('createMessage', (message) => {
         console.log("Create Message:", message);
-        // Emite un mensaje a todas las conexiones (broadcast)
-        io.emit('newMessage', {
-            from: message.from,
+        socket.emit.emit('newMessage', {
+            from: "Admin",
             text: message.text,
             createdAt: new Date().getTime()
-        })
+        });
+
     });
 
     socket.on('disconnect', () => {

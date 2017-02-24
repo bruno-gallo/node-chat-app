@@ -25,6 +25,9 @@ io.on('connection', (socket) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
             return callback('Name and Room Name are required');
         }
+        if (users.existsNameInRoom(params.name, params.room)) {
+            return callback('The Name is already taken');
+        }
         socket.join(params.room);
 
         users.removeUser(socket.id);
@@ -71,6 +74,6 @@ io.on('connection', (socket) => {
 
 });
 
-server.listen(3000, () => {
+server.listen(port, () => {
     console.log(`Server is up on port ${port}`);
 });

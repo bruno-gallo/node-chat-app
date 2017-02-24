@@ -1,3 +1,5 @@
+var lowerCase = require('lower-case');
+
 class Users {
     constructor () {
         this.users = [];
@@ -6,8 +8,8 @@ class Users {
     addUser(id, name, room) {
         var user = {
             id,
-            name,
-            room
+            name: name.trim(),
+            room: lowerCase(room)
         }
 
         this.users.push(user);
@@ -29,11 +31,19 @@ class Users {
 
     // Devuelve nombres de usuarios en el room
     getUserList(room) {
-        var users = this.users.filter((user) => user.room === room);
+        var users = this.users.filter((user) => user.room === lowerCase(room));
 
         var namesArray = users.map((user) => user.name);
 
         return namesArray;
+    }
+
+    existsNameInRoom(name, room) {
+        var usersWithThatName = this.users.filter((user) => user.name === name.trim() && user.room === lowerCase(room));
+        if (usersWithThatName[0]) {
+            return true;
+        }
+        return false;
     }
 }
 

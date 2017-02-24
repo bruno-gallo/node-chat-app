@@ -2,6 +2,7 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
+var lowerCase = require('lower-case');
 
 var {generateMessage, generateLocationMessage} = require('./utils/message.js');
 var {isRealString} = require('./utils/validation');
@@ -28,18 +29,19 @@ io.on('connection', (socket) => {
         if (users.existsNameInRoom(params.name, params.room)) {
             return callback('The Name is already taken');
         }
-        socket.join(params.room);
+        var room = lowerCase(params.room);
+        socket.join(room);
 
         users.removeUser(socket.id);
-        users.addUser(socket.id, params.name, params.room);
+        users.addUser(socket.id, params.name, room);
 
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+        io.to(room).emit('updateUserList', users.getUserList(room));
 
         // Emite un mensaje al usuario que abre una conexión
         socket.emit('newMessage', generateMessage("Admin", "Welcome to Chat App"));
 
         // Enmite un mensaje al resto de los usuarios
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage("Admin", `${params.name} has joined the room`));
+        socket.broadcast.to(room).emit('newMessage', generateMessage("Admin", `${params.name} has joined the room`));
 
         callback();
     });

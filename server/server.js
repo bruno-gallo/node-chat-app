@@ -25,10 +25,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newMessage', generateMessage("Admin", "A new user has joined"));
 
     // Cada vez que recibe un mensaje de un usuario, lo reenvía a todos los usuarios
-    socket.on('createMessage', (message) => {
+    // El callback se usa para confirmar que se recibio el mensaje (Aknowledgement)
+    socket.on('createMessage', (message, callback) => {
         console.log("Create Message:", message);
         io.emit('newMessage', generateMessage(message.from, message.text));
-
+        callback('This is from the server.');
     });
 
     socket.on('disconnect', () => {
